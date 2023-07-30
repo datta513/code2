@@ -1,0 +1,8 @@
+post http://localhost:4000/movies
+content-type:application.json()
+
+{
+  "directorId": 6,
+  "movieName": "Jurassic Park",
+  "leadActor": "Jeff Goldblum"
+}

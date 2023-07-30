@@ -1,6 +1,6 @@
-let k = require("express");
-let app = k();
-app.use(k.json());
+let express = require("express");
+let app = express();
+app.use(express.json());
 let sql3 = require("sqlite3");
 let { open } = require("sqlite");
 let path = require("path");
@@ -23,8 +23,8 @@ let initserverdb = async () => {
       filename: database,
       driver: sql3.Database,
     });
-    app.listen(3000, () => {
-      console.log("Server Running at http://localhost:3000/");
+    app.listen(4000, () => {
+      console.log("Server Running at http://localhost:4000/");
     });
   } catch (e) {
     console.log(`error occured ${e}`);
@@ -42,21 +42,28 @@ app.get("/movies/:movieId/", async (request, response) => {
   let query = `
     select * from movie
     where movie_id=${movieId};`;
-  let res = await db.all(query);
+  let res = await db.get(query);
   console.log(res);
   response.send(convert(res));
 });
 /*API 2  POST*/
-app.put("/movies/", async (request, response) => {
-  let k = request.body;
-  let { directorId, movieName, leadActor } = k;
-  let query = `insert into movie(director_id,movie_name,lead_actor)
+app.post("/movies/", async (request, response) => {
+  // console.log("entered");
+  let mo = request.body;
+  let { directorId, movieName, leadActor } = mo;
+  let query = `INSERT INTO movie(director_id,movie_name,lead_actor)
         values(
             ${directorId},
             '${movieName}',
             '${leadActor}',
         );`;
-  let res = await db.run(query);
-  console.log(res);
+  try {
+    await db.run(query);
+
+    response.send("Movie Successfully Added");
+  } catch (e) {
+    console.log(`error message ${e}`);
+    console.log(mo);
+  }
 });
 module.exports = app;
