@@ -1,6 +1,7 @@
 let express = require("express");
 let app = express();
 app.use(express.json());
+//app.use(express.urlencoded({ extended: true }));
 let sql3 = require("sqlite3");
 let { open } = require("sqlite");
 let path = require("path");
@@ -51,19 +52,33 @@ app.post("/movies/", async (request, response) => {
   // console.log("entered");
   let mo = request.body;
   let { directorId, movieName, leadActor } = mo;
-  let query = `INSERT INTO movie(director_id,movie_name,lead_actor)
+  let query = `INSERT INTO
+   movie(director_id,movie_name,lead_actor)
         values(
             ${directorId},
             '${movieName}',
-            '${leadActor}',
+            '${leadActor}'
         );`;
   try {
-    await db.run(query);
-
+    let k = await db.run(query);
     response.send("Movie Successfully Added");
   } catch (e) {
     console.log(`error message ${e}`);
     console.log(mo);
   }
+});
+app.put("/movies/:movieId/", async (req, resp) => {
+  let { movieId } = req.params;
+  let { directorId, movieName, leadActor } = req.body;
+  console.log(req.body.director_id);
+  let query = `update movie
+  set
+   director_id=${req.body.director_id},movie_name='${req.body.movie_name}',lead_actor='${req.body.lead_actor}' 
+  where movie_id=${movieId};`;
+  let res = await db.run(query);
+  resp.send("Movie Details Updated");
+  let query1 = `select * from movie;`;
+  let res2 = await db.all(query1);
+  console.log(res2);
 });
 module.exports = app;
