@@ -2,16 +2,20 @@ POST http://localhost:4000/movies/
 Content-Type: application/json
 
 {
-    "director_id":26,
- "movie_name":"sai",
- "lead_actor":"harsha"
+    "directorId":26,
+ "movieName":"sai",
+ "leadActor":"harsha"
 }
 ###
 put http://localhost:4000/movies/58/
 Content-Type: application/json
 
 {
-    "director_id":26,
- "movie_name":"sai",
- "lead_actor":"Harsha"
+    "directorId":26,
+ "movieName":"sai",
+ "leadActor":"Harsha"
 }
+###
+DELETE http://localhost:4000/movies/58/
+###
+GET http://localhost:4000/directors/

@@ -18,6 +18,12 @@ let convert = (obj) => {
   };
   return k;
 };
+let convert2 = (obj) => {
+  return {
+    directorId: obj.director_id,
+    directorName: obj.director_name,
+  };
+};
 let initserverdb = async () => {
   try {
     db = await open({
@@ -47,7 +53,7 @@ app.get("/movies/:movieId/", async (request, response) => {
   console.log(res);
   response.send(convert(res));
 });
-/*API 2  POST*/
+/*API 3  POST*/
 app.post("/movies/", async (request, response) => {
   // console.log("entered");
   let mo = request.body;
@@ -67,18 +73,36 @@ app.post("/movies/", async (request, response) => {
     console.log(mo);
   }
 });
+
+/*API 4 put*/
 app.put("/movies/:movieId/", async (req, resp) => {
   let { movieId } = req.params;
   let { directorId, movieName, leadActor } = req.body;
   console.log(req.body.director_id);
   let query = `update movie
   set
-   director_id=${req.body.director_id},movie_name='${req.body.movie_name}',lead_actor='${req.body.lead_actor}' 
+   director_id=${directorId},movie_name='${movieName}',lead_actor='${leadActor}' 
   where movie_id=${movieId};`;
   let res = await db.run(query);
   resp.send("Movie Details Updated");
-  let query1 = `select * from movie;`;
+  /* let query1 = `select * from movie;`;
   let res2 = await db.all(query1);
-  console.log(res2);
+  console.log(res2);*/
+});
+
+/*API delete*/
+app.delete("/movies/:movieId/", async (req, resp) => {
+  let { movieId } = req.params;
+  let query = `
+delete from movie
+where movie_id=${movieId};`;
+  let res = await db.run(query);
+  resp.send("Movie Removed");
+});
+/*API get director*/
+app.get("/directors/", async (req, resp) => {
+  let query = `select * from director;`;
+  let res = await db.all(query);
+  resp.send(res.map((each) => convert2(each)));
 });
 module.exports = app;
